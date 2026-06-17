@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EUROQUIP-KENIA · Dashboard Comercial 2025-2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2EFE6;--bg-soft:#E9E4D6;--card:#FFFFFF;--card-pure:#FFFFFF;
+  --ink:#1A1916;--ink-2:#4F4A40;--ink-3:#8A8478;--line:#E2DDD0;--line-2:#D2CBB9;
+  --clay:#C75634;--clay-2:#E07A4E;--clay-soft:#E8C9B8;--clay-bg:#FBEDE4;--terra:#A8412A;
+  --sage:#5E8A66;--sage-bg:#E7F1E8;
+  --gold:#C99237;--gold-bg:#FAF1DC;
+  --slate:#46707C;--slate-bg:#E6F0F2;
+  --plum:#8E5A72;--plum-bg:#F6E9F0;
+  --pos:#3E8E4E;--neg:#C0392B;--warn:#C7902B;
+  --green-bg:#E5F1E6;--yellow-bg:#FBF1D8;--red-bg:#F9E3DC;
+  --radius:15px;--shadow:0 1px 2px rgba(40,32,20,.05),0 10px 30px rgba(40,32,20,.07);
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding:24px 22px 70px}
+.wrap{max-width:1340px;margin:0 auto}
+h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+.num{font-family:'Fraunces',Georgia,serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+/* Header */
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:18px}
+.topbar h1{font-size:2.5rem;font-weight:700;letter-spacing:-.02em;line-height:1.02}
+.topbar h1 .accent{color:var(--clay)}
+.topbar p{color:var(--ink-2);font-size:.9rem;margin-top:6px;max-width:640px}
+.topbar .meta{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;font-size:.76rem;font-weight:600;border:1px solid var(--line-2)}
+.chip-clay{background:var(--clay);color:#fff;border-color:var(--clay)}
+.chip-plain{background:var(--card-pure);color:var(--ink-2)}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--clay);margin-bottom:4px}
+/* Tabs */
+.tabs{display:flex;gap:8px;background:var(--bg-soft);padding:6px;border-radius:14px;width:fit-content;margin-bottom:22px;box-shadow:inset 0 1px 3px rgba(40,32,20,.06)}
+.tab{cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:1.02rem;font-weight:600;padding:10px 26px;border-radius:10px;border:none;background:transparent;color:var(--ink-2);transition:all .15s}
+.tab:hover{color:var(--clay)}
+.tab.on{background:var(--card-pure);color:var(--clay);box-shadow:0 2px 8px rgba(40,32,20,.10)}
+.tabpane{display:none}
+.tabpane.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* Sections */
+.section{margin-top:28px}
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:8px}
+.section-head h2{font-size:1.3rem;font-weight:600;letter-spacing:-.01em}
+.section-head h2::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--clay);margin-right:9px;vertical-align:middle}
+.section-head .sub{font-size:.82rem;color:var(--ink-3)}
+/* Filters */
+.filters{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.fyear{margin-bottom:14px}
+.fyear:last-child{margin-bottom:0}
+.fyear-head{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.fyear-head b{font-size:.95rem}
+.fyear-head .ylink{font-size:.74rem;color:var(--clay);cursor:pointer;font-weight:600}
+.fyear-head .ylink:hover{text-decoration:underline}
+.months{display:flex;flex-wrap:wrap;gap:7px}
+.mbtn{cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:600;padding:7px 13px;border-radius:9px;border:1.5px solid var(--line-2);background:var(--card-pure);color:var(--ink-2);transition:all .13s;user-select:none}
+.mbtn:hover{border-color:var(--clay)}
+.mbtn.on{background:var(--clay);color:#fff;border-color:var(--clay);box-shadow:0 2px 7px rgba(199,86,52,.30)}
+.mbtn.dis{opacity:.35;cursor:not-allowed;background:var(--bg-soft)}
+.mbtn.dis:hover{border-color:var(--line-2)}
+/* KPI grid */
+.kgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.kpi{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--a);position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;right:-26px;top:-26px;width:80px;height:80px;border-radius:50%;background:var(--a);opacity:.10}
+.kpi .lbl{font-size:.72rem;color:var(--a);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.kpi .val{font-size:1.75rem;font-weight:600;margin-top:6px;letter-spacing:-.02em;color:var(--ink)}
+.kpi .sub{font-size:.76rem;color:var(--ink-2);margin-top:4px}
+/* Forecast hero */
+.hero{background:linear-gradient(135deg,#1A1916 0%,#2E2922 55%,#3A2F25 100%);color:#F4F2EC;border-radius:18px;padding:26px 30px;box-shadow:0 14px 44px rgba(40,32,20,.22);position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-50px;top:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(224,122,78,.45),transparent 70%);pointer-events:none}
+.hero .eyebrow{color:var(--clay-soft)}
+.hero-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:24px;align-items:end;margin-top:14px}
+.hero-main .big{font-size:3rem;font-weight:700;letter-spacing:-.03em;line-height:1}
+.hero-main .cap{font-size:.84rem;color:#C9C2B4;margin-top:6px}
+.hero-cell .hl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#A8A192;font-weight:600}
+.hero-cell .hv{font-size:1.5rem;font-weight:600;margin-top:5px;letter-spacing:-.02em}
+.hero-cell .hv.pos{color:#8FD08A}
+.hero-cell .hv.neg{color:#F0A78E}
+.hbar{margin-top:20px;height:11px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+.hbar > i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--clay-2),var(--gold));transition:width .5s}
+.hbar-cap{display:flex;justify-content:space-between;font-size:.74rem;color:#A8A192;margin-top:7px}
+/* Compliance cards */
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.gcard{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--line-2)}
+.gcard.g-green{border-top-color:var(--pos);background:linear-gradient(180deg,var(--green-bg),#fff 55%)}
+.gcard.g-yellow{border-top-color:var(--warn);background:linear-gradient(180deg,var(--yellow-bg),#fff 55%)}
+.gcard.g-red{border-top-color:var(--neg);background:linear-gradient(180deg,var(--red-bg),#fff 55%)}
+.gcard .qt{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.gcard .qt b{font-size:1rem}
+.sema{width:13px;height:13px;border-radius:50%;box-shadow:0 0 0 4px rgba(0,0,0,.05)}
+.sema.green{background:var(--pos)}.sema.yellow{background:var(--warn)}.sema.red{background:var(--neg)}
+.gcard .pct{font-size:1.95rem;font-weight:700;letter-spacing:-.02em}
+.gcard .row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--ink-2);margin-top:5px}
+.gcard .row b{color:var(--ink);font-weight:600}
+.gbar{height:7px;background:rgba(0,0,0,.06);border-radius:99px;overflow:hidden;margin-top:10px}
+.gbar > i{display:block;height:100%;border-radius:99px}
+.gbar > i.green{background:var(--pos)}.gbar > i.yellow{background:var(--warn)}.gbar > i.red{background:var(--neg)}
+/* panels */
+.annual{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.panel h3{font-size:1.05rem;margin-bottom:12px}
+.panel h3::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--clay);margin-right:8px;vertical-align:middle}
+.stat-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.stat-row:last-child{border-bottom:none}
+.stat-row .k{color:var(--ink-2)}
+.stat-row .v{font-weight:600}
+.statusbox{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;margin-top:6px}
+.statusbox.ahead{background:var(--green-bg);border:1px solid #BCD9BD}
+.statusbox.behind{background:var(--red-bg);border:1px solid #ECC4B9}
+.statusbox .ic{font-size:1.8rem}
+.statusbox .tt{font-size:1.05rem;font-weight:600}
+.statusbox .ds{font-size:.82rem;color:var(--ink-2)}
+/* projections */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pcard{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);border-left:4px solid var(--clay)}
+.pcard .ph{font-size:.92rem;font-weight:700;color:var(--clay);margin-bottom:4px}
+.pcard .pd{font-size:.76rem;color:var(--ink-3);margin-bottom:12px}
+.pcard .pv{font-size:1.85rem;font-weight:600;letter-spacing:-.02em}
+.pcard .prow{display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-2);margin-top:6px}
+.pcard .prow b{color:var(--ink)}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:99px;margin-top:10px}
+.tag.up{background:var(--green-bg);color:var(--pos)}
+.tag.dn{background:var(--red-bg);color:var(--neg)}
+/* charts */
+.chgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.chgrid.eq{grid-template-columns:1fr 1fr}
+.chart-card{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.chart-card h3{font-size:1rem;margin-bottom:14px}
+.chart-box{position:relative;height:290px}
+/* insights */
+.ins-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ins{display:flex;gap:12px;background:var(--card-pure);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);border-left:4px solid var(--line-2)}
+.ins.good{border-left-color:var(--pos)}
+.ins.bad{border-left-color:var(--neg)}
+.ins.info{border-left-color:var(--clay)}
+.ins .dot{flex-shrink:0;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:700}
+.ins.good .dot{background:var(--green-bg);color:var(--pos)}
+.ins.bad .dot{background:var(--red-bg);color:var(--neg)}
+.ins.info .dot{background:var(--clay-bg);color:var(--clay)}
+.ins .tx{font-size:.86rem;line-height:1.45}
+.ins .tx b{font-weight:600}
+/* table */
+.tbl-card{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{text-align:left;padding:10px 16px;border-bottom:1px solid var(--line)}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#fff;font-weight:600;background:var(--clay)}
+td.r,th.r{text-align:right}
+tbody tr:nth-child(even){background:var(--bg-soft)}
+tr:last-child td{border-bottom:none}
+/* compare KPI */
+.cmpgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.cmp{background:var(--card-pure);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--clay)}
+.cmp .lbl{font-size:.72rem;color:var(--clay);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.cmp .yr{display:flex;justify-content:space-between;align-items:baseline;font-size:.84rem;color:var(--ink-2);padding:4px 0}
+.cmp .yr .y{font-weight:600}
+.cmp .yr .vv{font-family:'Fraunces',Georgia,serif;font-size:1.15rem;font-weight:600;color:var(--ink)}
+.cmp .delta{margin-top:8px;font-size:.82rem;font-weight:700}
+.cmp .delta.up{color:var(--pos)}
+.cmp .delta.dn{color:var(--neg)}
+.foot{margin-top:36px;font-size:.76rem;color:var(--ink-3);text-align:center}
+@media(max-width:1080px){.kgrid{grid-template-columns:repeat(2,1fr)}.cgrid,.cmpgrid{grid-template-columns:repeat(2,1fr)}.hero-grid{grid-template-columns:1fr 1fr}.pgrid,.chgrid,.chgrid.eq,.annual,.ins-list{grid-template-columns:1fr}}
+@media(max-width:560px){.kgrid,.cgrid,.cmpgrid{grid-template-columns:1fr}.topbar h1{font-size:2rem}.tab{padding:9px 16px;font-size:.9rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Dashboard Comercial · Vendedora Kenia Atziry Alarcón</div>
+      <h1>EUROQUIP<span class="accent">-KENIA</span></h1>
+      <p>Indicadores dinámicos de ventas, cumplimiento de metas y proyecciones. Selecciona los meses para recalcular todos los indicadores en tiempo real.</p>
+    </div>
+    <div class="meta">
+      <span class="chip chip-clay">● Datos 2025 – 2026</span>
+      <span class="chip chip-plain" id="cutChip">Corte: 17 jun 2026</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="t2025">2025</button>
+    <button class="tab" data-tab="t2026">2026</button>
+    <button class="tab" data-tab="tcmp">Comparativa</button>
+  </div>
+
+  <!-- ============ TAB 2025 ============ -->
+  <div class="tabpane on" id="t2025">
+    <div class="section">
+      <div class="filters">
+        <div class="fyear">
+          <div class="fyear-head"><b>Selecciona meses de 2025</b><span class="ylink" data-yr="2025" data-act="all">Todos</span><span class="ylink" data-yr="2025" data-act="none">Ninguno</span></div>
+          <div class="months f2025"></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Indicadores 2025</h2><span class="sub" id="scope25"></span></div>
+      <div class="kgrid" id="kpis25"></div>
+    </div>
+    <div class="section">
+      <div class="chgrid">
+        <div class="chart-card"><h3>Ventas por mes · 2025</h3><div class="chart-box"><canvas id="ch25trend"></canvas></div></div>
+        <div class="chart-card"><h3>Participación por categoría · 2025</h3><div class="chart-box"><canvas id="ch25cat"></canvas></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="chart-card"><h3>Top 8 clientes · 2025</h3><div class="chart-box"><canvas id="ch25cust"></canvas></div></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Detalle por categoría · 2025</h2></div>
+      <div class="tbl-card"><table id="tbl25"></table></div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 2026 ============ -->
+  <div class="tabpane" id="t2026">
+    <div class="section">
+      <div class="filters">
+        <div class="fyear">
+          <div class="fyear-head"><b>Selecciona meses de 2026</b><span class="ylink" data-yr="2026" data-act="all">Todos</span><span class="ylink" data-yr="2026" data-act="none">Ninguno</span></div>
+          <div class="months f2026"></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Indicadores 2026</h2><span class="sub" id="scope26"></span></div>
+      <div class="kgrid" id="kpis26"></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Pronóstico de Cierre Anual 2026</h2><span class="sub">Probabilidad de alcanzar o superar el objetivo anual</span></div>
+      <div class="hero" id="hero"></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Cumplimiento de Metas 2026</h2><span class="sub" id="metaScope"></span></div>
+      <div class="annual" style="margin-bottom:14px">
+        <div class="panel" id="annualPanel"></div>
+        <div class="panel" id="statusPanel"></div>
+      </div>
+      <div class="cgrid" id="quarters"></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Proyecciones automáticas</h2><span class="sub">Basadas en la tendencia actual de ventas 2026</span></div>
+      <div class="pgrid" id="projections"></div>
+    </div>
+    <div class="section">
+      <div class="chgrid">
+        <div class="chart-card"><h3>Real vs Meta mensual · 2026</h3><div class="chart-box"><canvas id="ch26meta"></canvas></div></div>
+        <div class="chart-card"><h3>Participación por categoría · 2026</h3><div class="chart-box"><canvas id="ch26cat"></canvas></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="chart-card"><h3>Top 8 clientes · 2026</h3><div class="chart-box"><canvas id="ch26cust"></canvas></div></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Insights automáticos</h2><span class="sub">Conclusiones generadas a partir de los datos seleccionados</span></div>
+      <div class="ins-list" id="insights"></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Cumplimiento por categoría · 2026</h2><span class="sub">Real acumulado vs meta proporcional de meses seleccionados</span></div>
+      <div class="tbl-card"><table id="tbl26"></table></div>
+    </div>
+  </div>
+
+  <!-- ============ TAB COMPARATIVA ============ -->
+  <div class="tabpane" id="tcmp">
+    <div class="section">
+      <div class="filters">
+        <div class="fyear">
+          <div class="fyear-head"><b>Año 2025</b><span class="ylink" data-yr="2025" data-act="all">Todos</span><span class="ylink" data-yr="2025" data-act="none">Ninguno</span></div>
+          <div class="months f2025"></div>
+        </div>
+        <div class="fyear">
+          <div class="fyear-head"><b>Año 2026</b><span class="ylink" data-yr="2026" data-act="all">Todos</span><span class="ylink" data-yr="2026" data-act="none">Ninguno</span></div>
+          <div class="months f2026"></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Comparativa 2025 vs 2026</h2><span class="sub" id="cmpScope"></span></div>
+      <div class="cmpgrid" id="cmpKpis"></div>
+    </div>
+    <div class="section">
+      <div class="chgrid eq">
+        <div class="chart-card"><h3>Ventas mensuales · 2025 vs 2026</h3><div class="chart-box"><canvas id="chCmpMonth"></canvas></div></div>
+        <div class="chart-card"><h3>Acumulado por categoría · 2025 vs 2026</h3><div class="chart-box"><canvas id="chCmpCat"></canvas></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>Detalle comparativo por categoría</h2><span class="sub">Meses seleccionados en cada año</span></div>
+      <div class="tbl-card"><table id="tblCmp"></table></div>
+    </div>
+  </div>
+
+  <div class="foot">EUROQUIP-KENIA · Generado desde KENIA 2025-2026.xlsx · Moneda: MXN</div>
+</div>
+
+<script>
+const DATA={"s2025":[{"m":4,"y":2025,"t":4635.24,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"42640"},{"m":5,"y":2025,"t":4635.24,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"42916"},{"m":9,"y":2025,"t":19152,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"46848"},{"m":9,"y":2025,"t":16758,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"46848"},{"m":9,"y":2025,"t":10392,"c":"PREHEATED TECH","g":"REFRIGERACION COMERCIAL","i":"46906"},{"m":10,"y":2025,"t":10392,"c":"PREHEATED TECH","g":"REFRIGERACION COMERCIAL","i":"47597"},{"m":10,"y":2025,"t":9870,"c":"FAST FOOD TECHNOLOGIE","g":"REFRIGERACION COMERCIAL","i":"48103"},{"m":10,"y":2025,"t":1515,"c":"PREHEATED TECH","g":"MOBILIARIO","i":"47817"},{"m":10,"y":2025,"t":12198,"c":"PREHEATED TECH","g":"REFRIGERACION COMERCIAL","i":"48022"},{"m":12,"y":2025,"t":4879.21,"c":"PREHEATED TECH","g":"COCCIÓN","i":"49161"},{"m":6,"y":2025,"t":9870,"c":"FAST FOOD TECHNOLOGIE","g":"REFRIGERACION COMERCIAL","i":"44087"},{"m":6,"y":2025,"t":31350,"c":"FAST FOOD TECHNOLOGIE","g":"REFRIGERACION COMERCIAL","i":"44088"},{"m":7,"y":2025,"t":16744.2,"c":"PREHEATED TECH","g":"REFRIGERACION COMERCIAL","i":"44778"},{"m":7,"y":2025,"t":5040,"c":"PREHEATED TECH","g":"REFRIGERACION COMERCIAL","i":"45303"},{"m":8,"y":2025,"t":23826,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"45609"},{"m":4,"y":2025,"t":21631.5,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"42555"},{"m":5,"y":2025,"t":8559.24,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"43418"},{"m":9,"y":2025,"t":12586.05,"c":"JOSE LUIS ROJAS BAUTISTA","g":"HORNOS","i":"46425"},{"m":9,"y":2025,"t":1515,"c":"PREHEATED TECH","g":"MOBILIARIO","i":"46756"},{"m":9,"y":2025,"t":6402,"c":"PREHEATED TECH","g":"COCCIÓN","i":"46756"},{"m":9,"y":2025,"t":7311.01,"c":"PREHEATED TECH","g":"COCCIÓN","i":"46904"},{"m":11,"y":2025,"t":14583.74,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION COMERCIAL","i":"48242"},{"m":11,"y":2025,"t":10692.5,"c":"ANDRES JESUS SANDOVAL SANDOVAL","g":"REFRIGERACION COMERCIAL","i":"48418"},{"m":11,"y":2025,"t":18564.01,"c":"PREHEATED TECH","g":"COCCIÓN","i":"48647"},{"m":11,"y":2025,"t":2277,"c":"PREHEATED TECH","g":"MOBILIARIO","i":"48647"},{"m":11,"y":2025,"t":13658.89,"c":"JOSE LUIS ROJAS BAUTISTA","g":"COCCIÓN","i":"49013"},{"m":11,"y":2025,"t":19936.81,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"COCCIÓN","i":"48415"},{"m":11,"y":2025,"t":11203.93,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"COCCIÓN","i":"48415"},{"m":11,"y":2025,"t":13111.2,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"COCCIÓN","i":"48346"},{"m":11,"y":2025,"t":11343.95,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"COCCIÓN","i":"48346"},{"m":8,"y":2025,"t":19691.45,"c":"VENTA MOSTRADOR","g":"REFRIGERACION COMERCIAL","i":"46102"},{"m":8,"y":2025,"t":11475.75,"c":"VENTA MOSTRADOR","g":"REFRIGERACION COMERCIAL","i":"46102"},{"m":8,"y":2025,"t":22773.93,"c":"VENTA MOSTRADOR","g":"REFRIGERACION COMERCIAL","i":"46102"},{"m":8,"y":2025,"t":10884.15,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":7905.91,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":11974.17,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":8496.14,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":9996.09,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":5796.9,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":10884.15,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":8,"y":2025,"t":23948.34,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"46250"},{"m":12,"y":2025,"t":21119.56,"c":"JOSE LUIS ROJAS BAUTISTA","g":"COCCIÓN","i":"49337"},{"m":12,"y":2025,"t":10559.78,"c":"JOSE LUIS ROJAS BAUTISTA","g":"COCCIÓN","i":"49455"},{"m":4,"y":2025,"t":11457,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"42554"},{"m":3,"y":2025,"t":12890.55,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"41963"},{"m":3,"y":2025,"t":2134.65,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"MOBILIARIO","i":"41963"},{"m":3,"y":2025,"t":12121.05,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"41963"},{"m":6,"y":2025,"t":39164.7,"c":"JOSE LUIS ROJAS BAUTISTA","g":"COCCIÓN","i":"43782"},{"m":6,"y":2025,"t":32319,"c":"JOSE LUIS ROJAS BAUTISTA","g":"COCCIÓN","i":"43782"},{"m":6,"y":2025,"t":18828,"c":"GIULIANA CRISTINA ARCILA CARDONA","g":"COCCIÓN","i":"44240"},{"m":6,"y":2025,"t":15842.07,"c":"EDUARDO FRANCISCO RIOS ARAMBURO","g":"HORNOS","i":"44018"},{"m":6,"y":2025,"t":380,"c":"EDUARDO FRANCISCO RIOS ARAMBURO","g":"HUACAL EMPAQUE","i":"44018"},{"m":7,"y":2025,"t":12666.37,"c":"JOSE LUIS ROJAS BAUTISTA","g":"HORNOS","i":"44848"},{"m":1,"y":2025,"t":15532,"c":"NATURBIO SOLUCIONES BIOLOGICAS","g":"REFRIGERACION COMERCIAL","i":"40148"},{"m":4,"y":2025,"t":25787.43,"c":"JOSE GERARDO FLORES MUNGUIA","g":"BEBIDAS","i":"42319"},{"m":4,"y":2025,"t":8559.24,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"COCCIÓN","i":"42175"},{"m":4,"y":2025,"t":10500,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"MOBILIARIO","i":"42192"},{"m":5,"y":2025,"t":15260.08,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"43018"},{"m":5,"y":2025,"t":23616.2,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"43423"},{"m":5,"y":2025,"t":26190,"c":"PREHEATED TECH","g":"HORNOS","i":"43545"},{"m":5,"y":2025,"t":26256.34,"c":"JUAREZ CARMONA JOSE DE JESUS","g":"BEBIDAS","i":"43619"},{"m":5,"y":2025,"t":5334.53,"c":"GIULIANA CRISTINA ARCILA CARDONA","g":"SNACKS","i":"43692"},{"m":5,"y":2025,"t":27033.08,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"43298"},{"m":5,"y":2025,"t":15999.2,"c":"GARZA ALANIS COMERCIALIZADORA","g":"SNACKS","i":"43448"},{"m":5,"y":2025,"t":10434.26,"c":"GARZA ALANIS COMERCIALIZADORA","g":"SNACKS","i":"43448"},{"m":7,"y":2025,"t":22230.13,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"44730"},{"m":7,"y":2025,"t":26052.77,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"44730"},{"m":7,"y":2025,"t":3360.56,"c":"PREHEATED TECH","g":"SNACKS","i":"44735"},{"m":7,"y":2025,"t":16903.59,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"44777"},{"m":9,"y":2025,"t":20085.18,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46426"},{"m":9,"y":2025,"t":16913.84,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46422"},{"m":9,"y":2025,"t":26019.56,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46408"},{"m":9,"y":2025,"t":22201.79,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46408"},{"m":9,"y":2025,"t":35802.88,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"46650"},{"m":9,"y":2025,"t":42988.84,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"46650"},{"m":9,"y":2025,"t":49348.14,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"46650"},{"m":9,"y":2025,"t":23950.09,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46677"},{"m":9,"y":2025,"t":21420.1,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46647"},{"m":9,"y":2025,"t":47859.63,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46647"},{"m":9,"y":2025,"t":19960.97,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46647"},{"m":9,"y":2025,"t":32859.72,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46647"},{"m":9,"y":2025,"t":32859.72,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46647"},{"m":9,"y":2025,"t":21420.1,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"46647"},{"m":9,"y":2025,"t":39283.56,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"46820"},{"m":9,"y":2025,"t":23078.36,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46905"},{"m":9,"y":2025,"t":39662.31,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46905"},{"m":9,"y":2025,"t":39198.42,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46905"},{"m":9,"y":2025,"t":51375.45,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46905"},{"m":9,"y":2025,"t":10129.59,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"SNACKS","i":"47193"},{"m":10,"y":2025,"t":36591.96,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"47434"},{"m":10,"y":2025,"t":39187.77,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"47648"},{"m":10,"y":2025,"t":24844.32,"c":"PREHEATED TECH","g":"HORNOS","i":"47649"},{"m":10,"y":2025,"t":5080.33,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"SNACKS","i":"47691"},{"m":10,"y":2025,"t":25680.88,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"47788"},{"m":10,"y":2025,"t":38404.19,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"47788"},{"m":10,"y":2025,"t":21917.45,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"48042"},{"m":10,"y":2025,"t":62185.05,"c":"GRUPO MKH","g":"HORNOS","i":"47759"},{"m":10,"y":2025,"t":40088.28,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"47816"},{"m":10,"y":2025,"t":22506.2,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"48033"},{"m":9,"y":2025,"t":13276.81,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"HORNOS","i":"46727"},{"m":9,"y":2025,"t":19783,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"46727"},{"m":9,"y":2025,"t":23022.32,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"46727"},{"m":9,"y":2025,"t":22443.87,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"46727"},{"m":10,"y":2025,"t":19796.68,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"47347"},{"m":10,"y":2025,"t":26800.77,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"47347"},{"m":10,"y":2025,"t":25643.07,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"47347"},{"m":10,"y":2025,"t":32589.27,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"47347"},{"m":7,"y":2025,"t":5610.74,"c":"EDUARDO FRANCISCO RIOS ARAMBURO","g":"SNACKS","i":"44675"},{"m":7,"y":2025,"t":34527.6,"c":"LILIANA BONILLA MEDINA","g":"BEBIDAS","i":"44672"},{"m":7,"y":2025,"t":21732.43,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"45079"},{"m":8,"y":2025,"t":25213.28,"c":"PREHEATED TECH","g":"HORNOS","i":"45619"},{"m":8,"y":2025,"t":22674.01,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"45664"},{"m":8,"y":2025,"t":21496.75,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"46091"},{"m":8,"y":2025,"t":6694.2,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"SNACKS","i":"46096"},{"m":8,"y":2025,"t":19288.2,"c":"ANDRES JESUS SANDOVAL SANDOVAL","g":"REFRIGERACION PROFESIONAL","i":"46220"},{"m":11,"y":2025,"t":26433.25,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"48208"},{"m":11,"y":2025,"t":23312.18,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"48345"},{"m":11,"y":2025,"t":17709.97,"c":"PREHEATED TECH","g":"BEBIDAS","i":"48414"},{"m":11,"y":2025,"t":10924.03,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"48467"},{"m":11,"y":2025,"t":26969.2,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"48522"},{"m":11,"y":2025,"t":21845.42,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"48982"},{"m":12,"y":2025,"t":3977.03,"c":"INNOVADORA DE NEGOCIOS","g":"SNACKS","i":"49094"},{"m":12,"y":2025,"t":21973.32,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"49546"},{"m":12,"y":2025,"t":16299.39,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"49728"},{"m":12,"y":2025,"t":46407.99,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"49728"},{"m":12,"y":2025,"t":43883.82,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"49777"},{"m":12,"y":2025,"t":23072.94,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"49777"},{"m":12,"y":2025,"t":37546.93,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"49389"},{"m":1,"y":2025,"t":27214.13,"c":"COMERCIALIZADORA TEHON","g":"REFRIGERACION PROFESIONAL","i":"39773"},{"m":1,"y":2025,"t":24342.04,"c":"COMERCIALIZADORA TEHON","g":"REFRIGERACION PROFESIONAL","i":"39758"},{"m":1,"y":2025,"t":130060.18,"c":"YURIDIA LIZET DIAZ HERNANDEZ","g":"REFRIGERACION PROFESIONAL","i":"40079"},{"m":1,"y":2025,"t":39963.76,"c":"ASOCIACION DE CONDOMINOS VILLA ALEJANDRA","g":"REFRIGERACION PROFESIONAL","i":"40151"},{"m":4,"y":2025,"t":58499.3,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"42639"},{"m":4,"y":2025,"t":25269.68,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"42639"},{"m":4,"y":2025,"t":29944.57,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"42639"},{"m":4,"y":2025,"t":50539.36,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"42639"},{"m":4,"y":2025,"t":34808.98,"c":"FAST FOOD TECHNOLOGIE","g":"REFRIGERACION PROFESIONAL","i":"42654"},{"m":4,"y":2025,"t":22854.34,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"42727"},{"m":2,"y":2025,"t":47979.12,"c":"COMGOMEZ","g":"BEBIDAS","i":"40784"},{"m":2,"y":2025,"t":41194.81,"c":"COMGOMEZ","g":"BEBIDAS","i":"40784"},{"m":3,"y":2025,"t":29042.62,"c":"PREHEATED TECH","g":"HORNOS","i":"41447"},{"m":3,"y":2025,"t":27114.48,"c":"PREHEATED TECH","g":"HORNOS","i":"41447"},{"m":3,"y":2025,"t":35639.78,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"41808"},{"m":3,"y":2025,"t":23042.42,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"41808"},{"m":4,"y":2025,"t":5429.42,"c":"PREHEATED TECH","g":"SNACKS","i":"42463"},{"m":4,"y":2025,"t":20200.97,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"42464"},{"m":4,"y":2025,"t":25530.06,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"42465"},{"m":6,"y":2025,"t":14015.93,"c":"GIULIANA CRISTINA ARCILA CARDONA","g":"HORNOS","i":"43714"},{"m":2,"y":2025,"t":58077.98,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"40762"},{"m":2,"y":2025,"t":25433.7,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"40762"},{"m":2,"y":2025,"t":26875.81,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"40762"},{"m":2,"y":2025,"t":73810.16,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"40762"},{"m":3,"y":2025,"t":7484.68,"c":"MARIO BALTAZAR VILLAFRANCO","g":"SNACKS","i":"41377"},{"m":6,"y":2025,"t":33787.41,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"43961"},{"m":6,"y":2025,"t":40568.9,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"43961"},{"m":6,"y":2025,"t":26495.69,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"44101"},{"m":3,"y":2025,"t":38609.82,"c":"ANDRES JESUS SANDOVAL SANDOVAL","g":"REFRIGERACION PROFESIONAL","i":"41836"},{"m":3,"y":2025,"t":30380.38,"c":"ANDRES JESUS SANDOVAL SANDOVAL","g":"REFRIGERACION PROFESIONAL","i":"41836"},{"m":3,"y":2025,"t":28254.39,"c":"ANDRES JESUS SANDOVAL SANDOVAL","g":"REFRIGERACION PROFESIONAL","i":"41836"},{"m":3,"y":2025,"t":28117.34,"c":"ANDRES JESUS SANDOVAL SANDOVAL","g":"REFRIGERACION PROFESIONAL","i":"41840"},{"m":3,"y":2025,"t":17362.22,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41374"},{"m":3,"y":2025,"t":28381.78,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41374"},{"m":3,"y":2025,"t":36069.84,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41374"},{"m":3,"y":2025,"t":26267.56,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41374"},{"m":3,"y":2025,"t":43821.98,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41376"},{"m":3,"y":2025,"t":30367.86,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41378"},{"m":3,"y":2025,"t":28096.69,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"41607"},{"m":3,"y":2025,"t":24608.39,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"41619"},{"m":3,"y":2025,"t":58690.91,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"41699"},{"m":3,"y":2025,"t":21628.09,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"41722"},{"m":3,"y":2025,"t":23453.99,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41810"},{"m":3,"y":2025,"t":27294.39,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"41820"},{"m":4,"y":2025,"t":43816.59,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"42155"},{"m":6,"y":2025,"t":54020.61,"c":"LABORATORIO CORREGIDORA NORTE 75 SC","g":"REFRIGERACION PROFESIONAL","i":"44334"},{"m":6,"y":2025,"t":24615.05,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"44350"},{"m":6,"y":2025,"t":38529.07,"c":"PREHEATED TECH","g":"HORNOS","i":"44411"},{"m":6,"y":2025,"t":13756.3,"c":"PREHEATED TECH","g":"HORNOS","i":"44411"},{"m":6,"y":2025,"t":20454.72,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"44100"},{"m":8,"y":2025,"t":13676.27,"c":"GIULIANA CRISTINA ARCILA CARDONA","g":"HORNOS","i":"45498"},{"m":8,"y":2025,"t":12768.3,"c":"GIULIANA CRISTINA ARCILA CARDONA","g":"HORNOS","i":"45498"},{"m":10,"y":2025,"t":3697.01,"c":"PREHEATED TECH","g":"SNACKS","i":"47407"},{"m":2,"y":2025,"t":37100,"c":"NATURBIO SOLUCIONES BIOLOGICAS","g":"REFRIGERACION COMERCIAL","i":"40399"},{"m":12,"y":2025,"t":11974.17,"c":"JOSE LUIS ROJAS BAUTISTA","g":"COCCIÓN","i":"49172"},{"m":12,"y":2025,"t":48579.75,"c":"PREHEATED TECH","g":"HORNOS","i":"49383"},{"m":12,"y":2025,"t":17888.66,"c":"ORGANIKOA","g":"HORNOS","i":"49472"},{"m":2,"y":2025,"t":12162,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION COMERCIAL","i":"40503"},{"m":2,"y":2025,"t":25145.31,"c":"COMERCIALIZADORA TEHON","g":"REFRIGERACION PROFESIONAL","i":"40950"},{"m":7,"y":2025,"t":-21760.79,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"1333"},{"m":11,"y":2025,"t":-21845.42,"c":"PREHEATED TECH","g":"REFRIGERACION PROFESIONAL","i":"1452"}],"s2026":[{"m":4,"y":2026,"t":78600,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"HORNOS","i":"53465"},{"m":4,"y":2026,"t":186675,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"HORNOS","i":"53466"},{"m":4,"y":2026,"t":15429.78,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"53471"},{"m":5,"y":2026,"t":13216.36,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54396"},{"m":5,"y":2026,"t":15429.78,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54396"},{"m":5,"y":2026,"t":66081.78,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54398"},{"m":5,"y":2026,"t":32244.9,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54420"},{"m":1,"y":2026,"t":11186,"c":"VENTA MOSTRADOR","g":"REFRIGERACION COMERCIAL","i":"50657"},{"m":2,"y":2026,"t":16005.6,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"PROCESAMIENTO","i":"51126"},{"m":2,"y":2026,"t":38304.91,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"51127"},{"m":2,"y":2026,"t":46289.34,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"51127"},{"m":2,"y":2026,"t":36670.54,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"51127"},{"m":2,"y":2026,"t":14878.54,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"51127"},{"m":2,"y":2026,"t":33721.37,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"51127"},{"m":2,"y":2026,"t":8343.44,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51128"},{"m":2,"y":2026,"t":51000.75,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"PROCESAMIENTO","i":"51131"},{"m":4,"y":2026,"t":25604.4,"c":"ANTONIO GAMEZ GONZALEZ","g":"REFRIGERACION COMERCIAL","i":"52939"},{"m":3,"y":2026,"t":10248,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52161"},{"m":3,"y":2026,"t":2305.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52165"},{"m":3,"y":2026,"t":15729,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52166"},{"m":3,"y":2026,"t":3882,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52168"},{"m":3,"y":2026,"t":22470,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52168"},{"m":3,"y":2026,"t":7686,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52168"},{"m":3,"y":2026,"t":9576.23,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52328"},{"m":3,"y":2026,"t":12223.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52328"},{"m":3,"y":2026,"t":22317.81,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52328"},{"m":3,"y":2026,"t":6741,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52363"},{"m":3,"y":2026,"t":14878.54,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52372"},{"m":3,"y":2026,"t":12223.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52372"},{"m":3,"y":2026,"t":19152.46,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52372"},{"m":4,"y":2026,"t":10776.75,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53464"},{"m":4,"y":2026,"t":28511.4,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53439"},{"m":4,"y":2026,"t":12506.75,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53439"},{"m":4,"y":2026,"t":96990.79,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53439"},{"m":4,"y":2026,"t":10506.24,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"PROCESAMIENTO","i":"53468"},{"m":4,"y":2026,"t":58700,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"53469"},{"m":4,"y":2026,"t":23221.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"53469"},{"m":4,"y":2026,"t":11240.46,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"53469"},{"m":4,"y":2026,"t":30637.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53470"},{"m":4,"y":2026,"t":24211.55,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53470"},{"m":4,"y":2026,"t":14648.1,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53470"},{"m":4,"y":2026,"t":18064.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53472"},{"m":4,"y":2026,"t":24328.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"53472"},{"m":5,"y":2026,"t":81806.4,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54397"},{"m":5,"y":2026,"t":20947.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54399"},{"m":5,"y":2026,"t":117400,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54399"},{"m":5,"y":2026,"t":54537.6,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54399"},{"m":5,"y":2026,"t":29400.03,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54415"},{"m":5,"y":2026,"t":49005.75,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"54416"},{"m":5,"y":2026,"t":18064.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54417"},{"m":5,"y":2026,"t":23560,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54418"},{"m":5,"y":2026,"t":9975,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":24328.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":15823.49,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":4550.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":10541.39,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":25013.49,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":18064.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":21972.15,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":5,"y":2026,"t":27224.94,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"54449"},{"m":2,"y":2026,"t":12400,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51121"},{"m":2,"y":2026,"t":20095,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51123"},{"m":2,"y":2026,"t":161651.32,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51124"},{"m":2,"y":2026,"t":53218.65,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51124"},{"m":2,"y":2026,"t":35340,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51124"},{"m":2,"y":2026,"t":25013.49,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51124"},{"m":2,"y":2026,"t":30637.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51124"},{"m":2,"y":2026,"t":17436.88,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":14648.1,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":9101,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":11780,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":9074.98,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":23459.49,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":12105.77,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51125"},{"m":2,"y":2026,"t":53883.77,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":28511.4,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":22885.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":10212.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":36317.32,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":19090.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":7324.05,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":2,"y":2026,"t":24328.51,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"51129"},{"m":3,"y":2026,"t":18064.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52162"},{"m":3,"y":2026,"t":18064.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52163"},{"m":3,"y":2026,"t":45486,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52327"},{"m":3,"y":2026,"t":28293.38,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52327"},{"m":3,"y":2026,"t":133615.13,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52327"},{"m":3,"y":2026,"t":117400,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"52329"},{"m":3,"y":2026,"t":19068.22,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52360"},{"m":3,"y":2026,"t":53883.77,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":9469.98,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":62533.74,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":18064.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":14648.1,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":20425,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":17242.46,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52362"},{"m":3,"y":2026,"t":25863.68,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52366"},{"m":3,"y":2026,"t":18939.97,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52367"},{"m":3,"y":2026,"t":9469.98,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52368"},{"m":3,"y":2026,"t":15257,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52368"},{"m":3,"y":2026,"t":7324.05,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52368"},{"m":3,"y":2026,"t":10212.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52368"},{"m":3,"y":2026,"t":12105.77,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52368"},{"m":3,"y":2026,"t":4550.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52370"},{"m":3,"y":2026,"t":15257,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52370"},{"m":3,"y":2026,"t":9503.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52370"},{"m":3,"y":2026,"t":10541.39,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52370"},{"m":3,"y":2026,"t":9074.98,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52370"},{"m":3,"y":2026,"t":12105.77,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52370"},{"m":3,"y":2026,"t":9469.98,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"COCCIÓN","i":"52371"},{"m":2,"y":2026,"t":40142.78,"c":"ANTONIO GAMEZ GONZALEZ","g":"COCCIÓN","i":"50915"},{"m":2,"y":2026,"t":58700,"c":"JORGE GUADALUPE GARCIA VEGA","g":"REFRIGERACION COMERCIAL","i":"51268"},{"m":1,"y":2026,"t":197427.43,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50373"},{"m":1,"y":2026,"t":128639.57,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50373"},{"m":1,"y":2026,"t":126868.64,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50373"},{"m":1,"y":2026,"t":37200.71,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50373"},{"m":1,"y":2026,"t":56978.25,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50373"},{"m":1,"y":2026,"t":77629.61,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50374"},{"m":1,"y":2026,"t":65073.98,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50374"},{"m":1,"y":2026,"t":46166.95,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50374"},{"m":1,"y":2026,"t":131661.56,"c":"JOSE LUIS ROJAS BAUTISTA","g":"REFRIGERACION COMERCIAL","i":"50374"},{"m":3,"y":2026,"t":23480,"c":"ANTONIO GAMEZ GONZALEZ","g":"REFRIGERACION COMERCIAL","i":"51993"},{"m":3,"y":2026,"t":31575.75,"c":"ANTONIO GAMEZ GONZALEZ","g":"REFRIGERACION PROFESIONAL","i":"51992"},{"m":3,"y":2026,"t":9376.5,"c":"ANTONIO GAMEZ GONZALEZ","g":"REFRIGERACION COMERCIAL","i":"52093"},{"m":1,"y":2026,"t":22257.66,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION COMERCIAL","i":"50116"},{"m":1,"y":2026,"t":10855.9,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION COMERCIAL","i":"50116"},{"m":1,"y":2026,"t":14994.28,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION COMERCIAL","i":"50116"},{"m":4,"y":2026,"t":18507.01,"c":"JORGE GUADALUPE GARCIA VEGA","g":"COCCIÓN","i":"53295"},{"m":2,"y":2026,"t":666.9,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51134"},{"m":2,"y":2026,"t":2273.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51134"},{"m":2,"y":2026,"t":1119,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51134"},{"m":2,"y":2026,"t":1032.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51134"},{"m":2,"y":2026,"t":860.4,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51134"},{"m":2,"y":2026,"t":3877.25,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51134"},{"m":2,"y":2026,"t":2277.2,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":387.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":1208.4,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":1640,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":1487.6,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":2360,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":1335,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":1488.9,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":536.4,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":2,"y":2026,"t":1333.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"51135"},{"m":4,"y":2026,"t":12142.33,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"PROCESAMIENTO","i":"53467"},{"m":5,"y":2026,"t":820.8,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"53479"},{"m":5,"y":2026,"t":4466.7,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"53751"},{"m":5,"y":2026,"t":279.75,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"53751"},{"m":5,"y":2026,"t":258.2,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"UTENSILIOS","i":"53751"},{"m":4,"y":2026,"t":24413.12,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"53436"},{"m":4,"y":2026,"t":76545.87,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"53437"},{"m":4,"y":2026,"t":104309.6,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"53437"},{"m":4,"y":2026,"t":43866.46,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"53438"},{"m":4,"y":2026,"t":24413.12,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"53440"},{"m":5,"y":2026,"t":25299.63,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"53650"},{"m":5,"y":2026,"t":28781.2,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"54400"},{"m":5,"y":2026,"t":19586.45,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"54400"},{"m":5,"y":2026,"t":22306.79,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"54414"},{"m":5,"y":2026,"t":21653.91,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"54419"},{"m":5,"y":2026,"t":28706.06,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"54448"},{"m":5,"y":2026,"t":33369.5,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"BEBIDAS","i":"54450"},{"m":5,"y":2026,"t":28706.06,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"54451"},{"m":3,"y":2026,"t":25262.25,"c":"JORGE GUADALUPE GARCIA VEGA","g":"REFRIGERACION PROFESIONAL","i":"52352"},{"m":3,"y":2026,"t":18248.13,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52364"},{"m":3,"y":2026,"t":29218.73,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52364"},{"m":3,"y":2026,"t":22371.05,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52164"},{"m":3,"y":2026,"t":10226.76,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52167"},{"m":3,"y":2026,"t":21039.44,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52167"},{"m":3,"y":2026,"t":13049.78,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52167"},{"m":3,"y":2026,"t":22371.05,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52167"},{"m":3,"y":2026,"t":52805.52,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"52361"},{"m":3,"y":2026,"t":51779.06,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"52365"},{"m":3,"y":2026,"t":30033.37,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"52369"},{"m":1,"y":2026,"t":51936.56,"c":"PREHEATED TECH","g":"HORNOS","i":"49955"},{"m":1,"y":2026,"t":21716.98,"c":"GRUPO MKH","g":"REFRIGERACION PROFESIONAL","i":"50506"},{"m":1,"y":2026,"t":21716.98,"c":"GRUPO MKH","g":"REFRIGERACION PROFESIONAL","i":"50506"},{"m":1,"y":2026,"t":4757.05,"c":"GIULIANA CRISTINA ARCILA CARDONA","g":"SNACKS","i":"50483"},{"m":1,"y":2026,"t":25682.74,"c":"PROVEEDOR INTERNACIONAL DE COCINAS","g":"REFRIGERACION PROFESIONAL","i":"49921"},{"m":2,"y":2026,"t":22821.85,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION PROFESIONAL","i":"51122"},{"m":2,"y":2026,"t":19267.21,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"51130"},{"m":2,"y":2026,"t":14270.1,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"MOBILIARIO","i":"51130"},{"m":4,"y":2026,"t":43364.21,"c":"COMERCIALIZADORA ISATAM","g":"REFRIGERACION PROFESIONAL","i":"53077"},{"m":5,"y":2026,"t":184620.29,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"SNACKS","i":"54591"},{"m":5,"y":2026,"t":2.6,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"SNACKS","i":"54591"},{"m":5,"y":2026,"t":0.17,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"GOLD MEDAL","i":"54591"},{"m":5,"y":2026,"t":0.17,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"MOBILIARIO","i":"54591"},{"m":5,"y":2026,"t":3.46,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"SNACKS","i":"54591"},{"m":5,"y":2026,"t":6.93,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"SNACKS","i":"54592"},{"m":5,"y":2026,"t":0.35,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"MOBILIARIO","i":"54592"},{"m":5,"y":2026,"t":0.35,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"GOLD MEDAL","i":"54592"},{"m":5,"y":2026,"t":5.2,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"SNACKS","i":"54592"},{"m":5,"y":2026,"t":369240.58,"c":"LUIS EDUARDO ENRIQUEZ VALDES","g":"SNACKS","i":"54592"},{"m":2,"y":2026,"t":21343.06,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"50823"},{"m":2,"y":2026,"t":38620.77,"c":"COCINAS INDUSTRIALES EL ESTUFON","g":"REFRIGERACION PROFESIONAL","i":"50824"},{"m":2,"y":2026,"t":22259,"c":"GRUPO MKH","g":"REFRIGERACION PROFESIONAL","i":"50696"},{"m":3,"y":2026,"t":-13491.47,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"PROCESAMIENTO","i":"1601"},{"m":3,"y":2026,"t":-13665.75,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"1609"},{"m":3,"y":2026,"t":-12653.12,"c":"SIGFRIDO ALBERTO MANRIQUE ADAME","g":"REFRIGERACION COMERCIAL","i":"1612"}],"metas":[{"cat":"REFRIGERACION PROFESIONAL","part":0.25,"anual":3358782,"mensual":279898,"meses":[241759,255704,310971,281909,261350,279119,318497,318357,277518,302329,242531,268737]},{"cat":"REFRIGERACION COMERCIAL","part":0.16,"anual":2123143,"mensual":176929,"meses":[152820,161635,196570,178200,165204,176436,201327,201239,175424,191107,153308,169873]},{"cat":"COCCIÓN","part":0.16,"anual":2192950,"mensual":182746,"meses":[157845,166949,203033,184059,170636,182237,207947,207856,181192,197391,158349,175458]},{"cat":"HORNOS","part":0.05,"anual":673157,"mensual":56096,"meses":[48453,51247,62324,56499,52379,55940,63832,63804,55619,60592,48607,53859]},{"cat":"MOBILIARIO","part":0.03,"anual":424052,"mensual":35338,"meses":[30523,32283,39261,35592,32996,35239,40211,40193,35037,38170,30620,33928]},{"cat":"PROCESAMIENTO","part":0.01,"anual":145671,"mensual":12139,"meses":[10485,11090,13487,12226,11335,12105,13813,13807,12036,13112,10519,11655]},{"cat":"BEBIDAS","part":0.17,"anual":2283904,"mensual":190325,"meses":[164392,173874,211454,191693,177713,189795,216572,216477,188707,205578,164916,182736]},{"cat":"SNACKS","part":0.17,"anual":1746515,"mensual":145543,"meses":[125711,132962,161700,146588,135898,145138,165614,165541,144305,157206,126113,139739]},{"cat":"Totales","part":1,"anual":12948174,"mensual":1079015,"meses":[931987,985744,1198799,1086766,1007510,1076010,1227813,1227275,1069839,1165484,934963,1035985]}]};
+const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MES_S=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MONTHS_2026=[1,2,3,4,5,6];
+const CUT_MONTH=6, CUT_DAY=17;
+const PAL=['#C75634','#5E8A66','#C99237','#46707C','#8E5A72','#A8412A','#C7902B','#7A9D8E','#B5654D'];
+const KPICOL=[['--clay'],['--sage'],['--gold'],['--slate'],['--plum']];
+
+const catMetas=DATA.metas.filter(m=>m.cat!=='Totales');
+const totalRow=DATA.metas.find(m=>m.cat==='Totales');
+const META_ANUAL=totalRow?totalRow.anual:catMetas.reduce((s,m)=>s+(m.anual||0),0);
+const metaMensual=[];for(let i=0;i<12;i++)metaMensual[i]=catMetas.reduce((s,m)=>s+(m.meses[i]||0),0);
+const QDEF=[[0,1,2],[3,4,5],[6,7,8],[9,10,11]];
+function metaQuarter(q){return QDEF[q].reduce((s,i)=>s+metaMensual[i],0);}
+
+let sel2025=new Set([1,2,3,4,5,6,7,8,9,10,11,12]);
+let sel2026=new Set([1,2,3,4,5,6]);
+let curTab='t2025';
+
+function money(n){return '$'+Math.round(n).toLocaleString('es-MX');}
+function moneyK(n){if(Math.abs(n)>=1e6)return '$'+(n/1e6).toFixed(2)+'M';if(Math.abs(n)>=1e3)return '$'+Math.round(n/1e3)+'K';return '$'+Math.round(n);}
+function rowsSel(recs,sel){return recs.filter(r=>sel.has(r.m));}
+function byMonth(recs,sel){const a=Array(12).fill(0);recs.forEach(r=>{if(sel.has(r.m))a[r.m-1]+=r.t;});return a;}
+function kpiOf(recs,sel){const r=rowsSel(recs,sel);const v=r.reduce((s,x)=>s+x.t,0);const inv=new Set(r.map(x=>x.i)).size;const cust=new Set(r.map(x=>x.c)).size;const cats=new Set(r.map(x=>x.g)).size;return {v,inv,ticket:inv?v/inv:0,cust,cats,rows:r};}
+
+// ===== filtros =====
+function buildFilters(){
+  document.querySelectorAll('.f2025').forEach(c=>{c.innerHTML='';for(let m=1;m<=12;m++){const b=document.createElement('div');b.className='mbtn'+(sel2025.has(m)?' on':'');b.textContent=MES_S[m-1];b.dataset.m=m;b.dataset.yr='2025';b.onclick=()=>toggle('2025',m);c.appendChild(b);}});
+  document.querySelectorAll('.f2026').forEach(c=>{c.innerHTML='';for(let m=1;m<=12;m++){const en=MONTHS_2026.includes(m);const b=document.createElement('div');b.className='mbtn'+(sel2026.has(m)?' on':'')+(en?'':' dis');b.textContent=MES_S[m-1];b.dataset.m=m;b.dataset.yr='2026';if(en)b.onclick=()=>toggle('2026',m);c.appendChild(b);}});
+  document.querySelectorAll('.ylink').forEach(l=>{l.onclick=()=>{const yr=l.dataset.yr,act=l.dataset.act;
+    if(yr==='2025')sel2025=new Set(act==='all'?[1,2,3,4,5,6,7,8,9,10,11,12]:[]);
+    else sel2026=new Set(act==='all'?MONTHS_2026.slice():[]);
+    syncFilters();renderActive();};});
+}
+function toggle(yr,m){const s=yr==='2025'?sel2025:sel2026;if(s.has(m))s.delete(m);else s.add(m);syncFilters();renderActive();}
+function syncFilters(){
+  document.querySelectorAll('.f2025 .mbtn').forEach(b=>b.classList.toggle('on',sel2025.has(+b.dataset.m)));
+  document.querySelectorAll('.f2026 .mbtn').forEach(b=>{if(b.classList.contains('dis'))return;b.classList.toggle('on',sel2026.has(+b.dataset.m));});
+}
+
+// ===== tabs =====
+function setupTabs(){
+  document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');document.getElementById(t.dataset.tab).classList.add('on');
+    curTab=t.dataset.tab;renderActive();
+  };});
+}
+function renderActive(){if(curTab==='t2025')render2025();else if(curTab==='t2026')render2026();else renderCmp();}
+
+let charts={};
+function drawChart(id,type,data,opts){if(charts[id])charts[id].destroy();
+  const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'Inter',size:11}}},tooltip:{callbacks:{label:c=>{let v=c.parsed.y??c.parsed.x??c.parsed;return (c.dataset.label?c.dataset.label+': ':'')+money(v);}}}}};
+  charts[id]=new Chart(document.getElementById(id),{type,data,options:Object.assign(base,opts||{})});}
+
+// ===== TAB 2025 =====
+function render2025(){
+  const k=kpiOf(DATA.s2025,sel2025);
+  document.getElementById('scope25').textContent=sel2025.size+' mes(es) seleccionados';
+  const cards=[['Ventas 2025',money(k.v),'Total seleccionado'],['Facturas',k.inv.toLocaleString('es-MX'),'Documentos únicos'],['Ticket promedio',money(k.ticket),'Por factura'],['Clientes activos',k.cust.toLocaleString('es-MX'),'Con compra'],['Categorías',k.cats,'Líneas de producto']];
+  document.getElementById('kpis25').innerHTML=cards.map((c,i)=>'<div class="kpi" style="--a:var('+KPICOL[i]+')"><div class="lbl">'+c[0]+'</div><div class="val num">'+c[1]+'</div><div class="sub">'+c[2]+'</div></div>').join('');
+  const arr=byMonth(DATA.s2025,sel2025);
+  drawChart('ch25trend','bar',{labels:MES_S,datasets:[{label:'Ventas 2025',data:arr,backgroundColor:'#46707C',borderRadius:5}]},{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>moneyK(v)}}}});
+  catChart('ch25cat',k.rows);
+  custChart('ch25cust',k.rows,'#46707C');
+  catTableSimple('tbl25',k.rows,k.v);
+}
+
+// ===== TAB 2026 =====
+function render2026(){
+  const k=kpiOf(DATA.s2026,sel2026);
+  document.getElementById('scope26').textContent=sel2026.size+' mes(es) seleccionados';
+  const cards=[['Ventas 2026',money(k.v),'Total seleccionado'],['Facturas',k.inv.toLocaleString('es-MX'),'Documentos únicos'],['Ticket promedio',money(k.ticket),'Por factura'],['Clientes activos',k.cust.toLocaleString('es-MX'),'Con compra'],['Categorías',k.cats,'Líneas de producto']];
+  document.getElementById('kpis26').innerHTML=cards.map((c,i)=>'<div class="kpi" style="--a:var('+KPICOL[i]+')"><div class="lbl">'+c[0]+'</div><div class="val num">'+c[1]+'</div><div class="sub">'+c[2]+'</div></div>').join('');
+
+  const sel26arr=[...sel2026].sort((a,b)=>a-b);
+  const realAcum=k.v;
+  const metaEsperada=sel26arr.reduce((s,m)=>s+(metaMensual[m-1]||0),0);
+  const cumplAnual=META_ANUAL?realAcum/META_ANUAL:0;
+  const faltante=META_ANUAL-realAcum;
+  const adelanto=realAcum-metaEsperada;
+  const mesesConDatos=[...new Set(DATA.s2026.map(r=>r.m))].filter(m=>sel2026.has(m)).sort((a,b)=>a-b);
+  const realCD=DATA.s2026.filter(r=>mesesConDatos.includes(r.m)).reduce((s,r)=>s+r.t,0);
+  const metaCD=mesesConDatos.reduce((s,m)=>s+(metaMensual[m-1]||0),0);
+  const ratioPlan=metaCD>0?realCD/metaCD:0;
+  const proyAnual=META_ANUAL*ratioPlan;
+  const difProy=proyAnual-META_ANUAL;
+  const pctProy=META_ANUAL?proyAnual/META_ANUAL:0;
+
+  const heroPos=difProy>=0;
+  document.getElementById('hero').innerHTML=
+    '<div class="eyebrow">Pronóstico de Cierre Anual</div>'+
+    '<div class="hero-grid">'+
+      '<div class="hero-main"><div class="big num">'+money(proyAnual)+'</div><div class="cap">Proyección de ventas al cierre de 2026</div></div>'+
+      '<div class="hero-cell"><div class="hl">Meta anual</div><div class="hv num">'+money(META_ANUAL)+'</div></div>'+
+      '<div class="hero-cell"><div class="hl">Diferencia proyectada</div><div class="hv num '+(heroPos?'pos':'neg')+'">'+(heroPos?'+':'')+money(difProy)+'</div></div>'+
+      '<div class="hero-cell"><div class="hl">% esperado de cumplimiento</div><div class="hv num '+(heroPos?'pos':'neg')+'">'+(pctProy*100).toFixed(1)+'%</div></div>'+
+    '</div>'+
+    '<div class="hbar"><i style="width:'+Math.min(100,pctProy*100).toFixed(1)+'%"></i></div>'+
+    '<div class="hbar-cap"><span>'+(heroPos?'Proyección por encima de la meta (+'+(pctProy*100-100).toFixed(1)+'%)':'Proyección por debajo de la meta ('+(pctProy*100-100).toFixed(1)+'%)')+'</span><span>Base: '+(mesesConDatos.length?mesesConDatos.map(m=>MES_S[m-1]).join(', '):'sin datos')+'</span></div>';
+
+  document.getElementById('metaScope').textContent='Meses 2026 seleccionados: '+(sel26arr.length?sel26arr.map(m=>MES_S[m-1]).join(', '):'ninguno');
+  document.getElementById('annualPanel').innerHTML=
+    '<h3>Cumplimiento anual</h3>'+
+    '<div class="stat-row"><span class="k">Venta acumulada actual</span><span class="v num">'+money(realAcum)+'</span></div>'+
+    '<div class="stat-row"><span class="k">Meta anual</span><span class="v num">'+money(META_ANUAL)+'</span></div>'+
+    '<div class="stat-row"><span class="k">% de cumplimiento</span><span class="v num">'+(cumplAnual*100).toFixed(1)+'%</span></div>'+
+    '<div class="stat-row"><span class="k">Faltante contra meta</span><span class="v num" style="color:'+(faltante>0?'var(--neg)':'var(--pos)')+'">'+money(Math.abs(faltante))+'</span></div>'+
+    '<div class="gbar"><i class="'+(cumplAnual>=1?'green':cumplAnual>=0.5?'yellow':'red')+'" style="width:'+Math.min(100,cumplAnual*100).toFixed(1)+'%"></i></div>';
+
+  const ahead=adelanto>=0;const adelPct=metaEsperada>0?adelanto/metaEsperada:0;
+  document.getElementById('statusPanel').innerHTML=
+    '<h3>¿Voy adelantado o atrasado?</h3>'+
+    '<div class="stat-row"><span class="k">Venta real acumulada</span><span class="v num">'+money(realAcum)+'</span></div>'+
+    '<div class="stat-row"><span class="k">Venta esperada según meta</span><span class="v num">'+money(metaEsperada)+'</span></div>'+
+    '<div class="statusbox '+(ahead?'ahead':'behind')+'"><div class="ic">'+(ahead?'▲':'▼')+'</div><div><div class="tt" style="color:'+(ahead?'var(--pos)':'var(--neg)')+'">'+(ahead?'Adelantado':'Atrasado')+' '+money(Math.abs(adelanto))+'</div><div class="ds">'+(ahead?'+':'')+(adelPct*100).toFixed(1)+'% respecto a lo esperado en los meses seleccionados</div></div></div>';
+
+  let qhtml='';
+  for(let q=0;q<4;q++){
+    const mesesQ=QDEF[q].map(i=>i+1);
+    const selQ=mesesQ.filter(m=>sel2026.has(m));
+    const ventaQ=DATA.s2026.filter(r=>selQ.includes(r.m)).reduce((s,r)=>s+r.t,0);
+    const metaQfull=metaQuarter(q);
+    const metaQe=selQ.reduce((s,m)=>s+(metaMensual[m-1]||0),0);
+    const cumplQ=metaQfull>0?ventaQ/metaQfull:0;
+    let estado='yellow';
+    if(metaQe>0){const rq=ventaQ/metaQe;estado=rq>=1?'green':rq>=0.9?'yellow':'red';}
+    const dif=ventaQ-metaQfull;
+    qhtml+='<div class="gcard g-'+estado+'"><div class="qt"><b>Q'+(q+1)+' · '+MES_S[mesesQ[0]-1]+'–'+MES_S[mesesQ[2]-1]+'</b><span class="sema '+estado+'"></span></div>'+
+      '<div class="pct num">'+(cumplQ*100).toFixed(0)+'%</div>'+
+      '<div class="row"><span>Meta trimestral</span><b class="num">'+moneyK(metaQfull)+'</b></div>'+
+      '<div class="row"><span>Venta acumulada</span><b class="num">'+moneyK(ventaQ)+'</b></div>'+
+      '<div class="row"><span>Diferencia</span><b class="num" style="color:'+(dif>=0?'var(--pos)':'var(--neg)')+'">'+(dif>=0?'+':'')+moneyK(dif)+'</b></div>'+
+      '<div class="gbar"><i class="'+estado+'" style="width:'+Math.min(100,cumplQ*100).toFixed(1)+'%"></i></div></div>';
+  }
+  document.getElementById('quarters').innerHTML=qhtml;
+  renderProjections(mesesConDatos);
+
+  // charts 2026
+  const arr26=byMonth(DATA.s2026,sel2026);
+  drawChart('ch26meta','bar',{labels:MES_S.slice(0,6),datasets:[
+    {label:'Real 2026',data:arr26.slice(0,6),backgroundColor:'#C75634',borderRadius:5},
+    {label:'Meta',data:metaMensual.slice(0,6),backgroundColor:'#D9CFA8',borderRadius:5}
+  ]},{scales:{y:{ticks:{callback:v=>moneyK(v)}}}});
+  catChart('ch26cat',k.rows);
+  custChart('ch26cust',k.rows,'#C75634');
+
+  renderInsights({realAcum,metaEsperada,proyAnual,difProy,pctProy,ratioPlan,all:k.rows});
+  catTableMeta('tbl26',sel26arr);
+}
+
+function renderProjections(mesesConDatos){
+  const cont=document.getElementById('projections');
+  const mesActual=mesesConDatos.length?mesesConDatos[mesesConDatos.length-1]:null;
+  if(mesActual==null){cont.innerHTML='<div class="pcard"><div class="ph">Sin meses 2026 seleccionados</div><div class="pd">Selecciona meses de 2026 para ver proyecciones.</div></div>';return;}
+  const ventaMes=DATA.s2026.filter(r=>r.m===mesActual).reduce((s,r)=>s+r.t,0);
+  const diasMes=new Date(2026,mesActual,0).getDate();
+  let fraccion=1,enCurso=false;if(mesActual===CUT_MONTH){fraccion=CUT_DAY/diasMes;enCurso=true;}
+  const proyMes=fraccion>0?ventaMes/fraccion:ventaMes;
+  const metaMes=metaMensual[mesActual-1]||0;const difMes=proyMes-metaMes;
+  const serie=mesesConDatos.map(m=>DATA.s2026.filter(r=>r.m===m).reduce((s,r)=>s+r.t,0));
+  let crecim=0;if(serie.length>=2){let gs=[];for(let i=1;i<serie.length;i++){if(serie[i-1]>0)gs.push(serie[i]/serie[i-1]-1);}crecim=gs.length?gs.reduce((a,b)=>a+b,0)/gs.length:0;}
+  const baseSig=enCurso?proyMes:(serie.length?serie[serie.length-1]:0);
+  const proxMes=mesActual+1<=12?mesActual+1:null;const proySig=baseSig*(1+crecim);
+  const realTot=DATA.s2026.filter(r=>mesesConDatos.includes(r.m)).reduce((s,r)=>s+r.t,0);
+  const metaTot=mesesConDatos.reduce((s,m)=>s+(metaMensual[m-1]||0),0);
+  const ratio=metaTot>0?realTot/metaTot:0;const proyAnual=META_ANUAL*ratio;const difAnual=proyAnual-META_ANUAL;
+  const tagMes=difMes>=0?'<span class="tag up">+'+money(difMes)+' vs meta mensual</span>':'<span class="tag dn">'+money(difMes)+' vs meta mensual</span>';
+  const tagSig=crecim>=0?'<span class="tag up">Tendencia +'+(crecim*100).toFixed(1)+'%</span>':'<span class="tag dn">Tendencia '+(crecim*100).toFixed(1)+'%</span>';
+  const tagAnio=difAnual>=0?'<span class="tag up">+'+money(difAnual)+' sobre meta</span>':'<span class="tag dn">'+money(difAnual)+' bajo meta</span>';
+  cont.innerHTML=
+    '<div class="pcard"><div class="ph">Proyección cierre de mes</div><div class="pd">'+MES[mesActual-1]+' 2026'+(enCurso?' · '+(fraccion*100).toFixed(0)+'% transcurrido':' · mes completo')+'</div><div class="pv num">'+money(proyMes)+'</div><div class="prow"><span>Venta actual del mes</span><b class="num">'+money(ventaMes)+'</b></div><div class="prow"><span>Meta mensual estimada</span><b class="num">'+money(metaMes)+'</b></div>'+tagMes+'</div>'+
+    '<div class="pcard"><div class="ph">Proyección al siguiente mes</div><div class="pd">'+(proxMes?MES[proxMes-1]+' 2026':'—')+'</div><div class="pv num">'+money(proySig)+'</div><div class="prow"><span>Base (mes en curso)</span><b class="num">'+money(baseSig)+'</b></div><div class="prow"><span>Crecimiento esperado</span><b class="num">'+(crecim>=0?'+':'')+(crecim*100).toFixed(1)+'%</b></div>'+tagSig+'</div>'+
+    '<div class="pcard"><div class="ph">Proyección cierre de año</div><div class="pd">Cierre de 2026 al ritmo actual</div><div class="pv num">'+money(proyAnual)+'</div><div class="prow"><span>Meta anual</span><b class="num">'+money(META_ANUAL)+'</b></div><div class="prow"><span>Diferencia proyectada</span><b class="num" style="color:'+(difAnual>=0?'var(--pos)':'var(--neg)')+'">'+(difAnual>=0?'+':'')+money(difAnual)+'</b></div>'+tagAnio+'</div>';
+}
+
+function renderInsights(ctx){
+  const ins=[];const {proyAnual,difProy,pctProy,ratioPlan,all}=ctx;
+  if(ratioPlan>=1)ins.push({t:'good',ic:'✓',tx:'<b>Ritmo suficiente:</b> el desempeño actual es del '+(ratioPlan*100).toFixed(0)+'% del plan; a este ritmo se cumpliría la meta anual.'});
+  else ins.push({t:'bad',ic:'!',tx:'<b>Ritmo insuficiente:</b> el desempeño actual es del '+(ratioPlan*100).toFixed(0)+'% del plan; a este ritmo no se alcanzaría la meta anual.'});
+  if(difProy>=0)ins.push({t:'good',ic:'▲',tx:'<b>Exceso proyectado:</b> se proyecta cerrar '+money(difProy)+' (+'+((pctProy*100)-100).toFixed(1)+'%) por encima del objetivo anual.'});
+  else ins.push({t:'bad',ic:'▼',tx:'<b>Déficit proyectado:</b> se proyecta cerrar '+money(Math.abs(difProy))+' ('+((pctProy*100)-100).toFixed(1)+'%) por debajo del objetivo anual.'});
+  const qperf=[];
+  for(let q=0;q<4;q++){const mesesQ=QDEF[q].map(i=>i+1).filter(m=>sel2026.has(m));if(!mesesQ.length)continue;const ventaQ=DATA.s2026.filter(r=>mesesQ.includes(r.m)).reduce((s,r)=>s+r.t,0);const metaQe=mesesQ.reduce((s,m)=>s+(metaMensual[m-1]||0),0);qperf.push({q:q+1,rq:metaQe>0?ventaQ/metaQe:0});}
+  if(qperf.length){const peor=qperf.reduce((a,b)=>b.rq<a.rq?b:a);const mejor=qperf.reduce((a,b)=>b.rq>a.rq?b:a);
+    ins.push({t:'bad',ic:'⚠',tx:'<b>Trimestre con mayor riesgo:</b> Q'+peor.q+' con '+(peor.rq*100).toFixed(0)+'% de cumplimiento vs lo esperado.'});
+    ins.push({t:'good',ic:'★',tx:'<b>Trimestre con mejor desempeño:</b> Q'+mejor.q+' con '+(mejor.rq*100).toFixed(0)+'% de cumplimiento vs lo esperado.'});}
+  const tot=all.reduce((s,r)=>s+r.t,0)||1;
+  const catMap={};all.forEach(r=>catMap[r.g]=(catMap[r.g]||0)+r.t);const catTop=Object.entries(catMap).sort((a,b)=>b[1]-a[1])[0];
+  if(catTop)ins.push({t:'info',ic:'◆',tx:'<b>Categoría que impulsa el cumplimiento:</b> '+catTop[0]+' aporta '+money(catTop[1])+' ('+(catTop[1]/tot*100).toFixed(0)+'% del total).'});
+  const custMap={};all.forEach(r=>custMap[r.c]=(custMap[r.c]||0)+r.t);const custTop=Object.entries(custMap).sort((a,b)=>b[1]-a[1])[0];
+  if(custTop)ins.push({t:'info',ic:'●',tx:'<b>Cliente que impulsa el cumplimiento:</b> '+custTop[0]+' con '+money(custTop[1])+' ('+(custTop[1]/tot*100).toFixed(0)+'% del total).'});
+  document.getElementById('insights').innerHTML=ins.map(i=>'<div class="ins '+i.t+'"><div class="dot">'+i.ic+'</div><div class="tx">'+i.tx+'</div></div>').join('');
+}
+
+// ===== helpers de charts/tablas compartidos =====
+function catChart(id,rows){const m={};rows.forEach(r=>m[r.g]=(m[r.g]||0)+r.t);const c=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  drawChart(id,'doughnut',{labels:c.map(x=>x[0]),datasets:[{data:c.map(x=>x[1]),backgroundColor:PAL,borderWidth:2,borderColor:'#fff'}]},{plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:10}}}},cutout:'58%'});}
+function custChart(id,rows,col){const m={};rows.forEach(r=>m[r.c]=(m[r.c]||0)+r.t);const c=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  drawChart(id,'bar',{labels:c.map(x=>x[0].length>28?x[0].slice(0,26)+'…':x[0]),datasets:[{label:'Ventas',data:c.map(x=>x[1]),backgroundColor:col,borderRadius:5}]},{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>moneyK(v)}}}});}
+function catTableSimple(id,rows,tot){const m={};rows.forEach(r=>m[r.g]=(m[r.g]||0)+r.t);const arr=Object.entries(m).sort((a,b)=>b[1]-a[1]);
+  let h='<thead><tr><th>Categoría</th><th class="r">Ventas</th><th class="r">% participación</th></tr></thead><tbody>';
+  arr.forEach(([c,v])=>h+='<tr><td>'+c+'</td><td class="r num">'+money(v)+'</td><td class="r num">'+(tot?(v/tot*100).toFixed(1):'0')+'%</td></tr>');
+  h+='</tbody>';document.getElementById(id).innerHTML=h;}
+function catTableMeta(id,sel26arr){
+  const rows=catMetas.map(m=>{const real=DATA.s2026.filter(r=>r.g===m.cat&&sel2026.has(r.m)).reduce((s,r)=>s+r.t,0);const metaProp=sel26arr.reduce((s,mm)=>s+(m.meses[mm-1]||0),0);return {cat:m.cat,real,metaProp,metaAnual:m.anual,cumpl:metaProp>0?real/metaProp:0};}).sort((a,b)=>b.real-a.real);
+  let h='<thead><tr><th>Categoría</th><th class="r">Real acumulado</th><th class="r">Meta (meses sel.)</th><th class="r">Meta anual</th><th class="r">% cumplimiento</th></tr></thead><tbody>';
+  rows.forEach(r=>{const col=r.cumpl>=1?'var(--pos)':r.cumpl>=0.9?'var(--warn)':'var(--neg)';h+='<tr><td>'+r.cat+'</td><td class="r num">'+money(r.real)+'</td><td class="r num">'+money(r.metaProp)+'</td><td class="r num">'+money(r.metaAnual)+'</td><td class="r num" style="color:'+col+';font-weight:600">'+(r.cumpl*100).toFixed(0)+'%</td></tr>';});
+  h+='</tbody>';document.getElementById(id).innerHTML=h;}
+
+// ===== TAB COMPARATIVA =====
+function renderCmp(){
+  const k25=kpiOf(DATA.s2025,sel2025),k26=kpiOf(DATA.s2026,sel2026);
+  document.getElementById('cmpScope').textContent='2025: '+sel2025.size+' mes(es) · 2026: '+sel2026.size+' mes(es)';
+  const defs=[['Ventas',money(k25.v),money(k26.v),k25.v,k26.v],['Facturas',k25.inv.toLocaleString('es-MX'),k26.inv.toLocaleString('es-MX'),k25.inv,k26.inv],['Ticket promedio',money(k25.ticket),money(k26.ticket),k25.ticket,k26.ticket],['Clientes activos',k25.cust.toLocaleString('es-MX'),k26.cust.toLocaleString('es-MX'),k25.cust,k26.cust]];
+  document.getElementById('cmpKpis').innerHTML=defs.map(d=>{const var_=d[3]>0?(d[4]/d[3]-1):0;const up=var_>=0;return '<div class="cmp"><div class="lbl">'+d[0]+'</div><div class="yr"><span class="y">2025</span><span class="vv">'+d[1]+'</span></div><div class="yr"><span class="y" style="color:var(--clay)">2026</span><span class="vv" style="color:var(--clay)">'+d[2]+'</span></div><div class="delta '+(up?'up':'dn')+'">'+(up?'▲ +':'▼ ')+(var_*100).toFixed(1)+'% vs 2025</div></div>';}).join('');
+  const a25=byMonth(DATA.s2025,sel2025),a26=byMonth(DATA.s2026,sel2026);
+  drawChart('chCmpMonth','line',{labels:MES_S,datasets:[
+    {label:'2025',data:a25.map(v=>v||null),borderColor:'#46707C',backgroundColor:'rgba(70,112,124,.12)',tension:.3,fill:true,spanGaps:true,borderWidth:2.5,pointRadius:3},
+    {label:'2026',data:a26.map(v=>v||null),borderColor:'#C75634',backgroundColor:'rgba(199,86,52,.12)',tension:.3,fill:true,spanGaps:true,borderWidth:2.5,pointRadius:3}
+  ]},{scales:{y:{ticks:{callback:v=>moneyK(v)}}}});
+  const cset=new Set([...DATA.s2025.map(r=>r.g),...DATA.s2026.map(r=>r.g)]);
+  const cats=[...cset].map(c=>({c,v25:DATA.s2025.filter(r=>r.g===c&&sel2025.has(r.m)).reduce((s,r)=>s+r.t,0),v26:DATA.s2026.filter(r=>r.g===c&&sel2026.has(r.m)).reduce((s,r)=>s+r.t,0)})).sort((a,b)=>(b.v25+b.v26)-(a.v25+a.v26)).slice(0,8);
+  drawChart('chCmpCat','bar',{labels:cats.map(x=>x.c.length>16?x.c.slice(0,15)+'…':x.c),datasets:[
+    {label:'2025',data:cats.map(x=>x.v25),backgroundColor:'#46707C',borderRadius:5},
+    {label:'2026',data:cats.map(x=>x.v26),backgroundColor:'#C75634',borderRadius:5}
+  ]},{scales:{y:{ticks:{callback:v=>moneyK(v)}}}});
+  const allcats=[...cset].map(c=>({c,v25:DATA.s2025.filter(r=>r.g===c&&sel2025.has(r.m)).reduce((s,r)=>s+r.t,0),v26:DATA.s2026.filter(r=>r.g===c&&sel2026.has(r.m)).reduce((s,r)=>s+r.t,0)})).sort((a,b)=>(b.v25+b.v26)-(a.v25+a.v26));
+  let h='<thead><tr><th>Categoría</th><th class="r">2025</th><th class="r">2026</th><th class="r">Variación</th></tr></thead><tbody>';
+  allcats.forEach(x=>{const var_=x.v25>0?(x.v26/x.v25-1):(x.v26>0?1:0);const col=var_>=0?'var(--pos)':'var(--neg)';h+='<tr><td>'+x.c+'</td><td class="r num">'+money(x.v25)+'</td><td class="r num">'+money(x.v26)+'</td><td class="r num" style="color:'+col+';font-weight:600">'+(x.v25>0?(var_>=0?'+':'')+(var_*100).toFixed(0)+'%':'—')+'</td></tr>';});
+  h+='</tbody>';document.getElementById('tblCmp').innerHTML=h;
+}
+
+buildFilters();setupTabs();renderActive();
+</script>
+</body>
+</html>
